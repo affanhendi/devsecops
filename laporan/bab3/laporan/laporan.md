@@ -1,9 +1,9 @@
 # LAPORAN PRAKTIKUM BAB 3
 ## Docker Network, Volume, Bind Mount, tmpfs, dan Compose
 
-**Nama**: ........................................................  
-**NIM**: ..........................................................  
-**Kelas**: ........................................................  
+**Nama**: Mohammad Affan Hendi Firmansyah  
+**NIM**: 3126640049  
+**Kelas**: 1 IT-B S.Tr.Lj  
 **Tanggal pelaksanaan**: 10 September 2026 & 22 September 2026  
 
 ---

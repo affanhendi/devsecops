@@ -1,9 +1,9 @@
 # LAPORAN PRAKTIKUM BAB 1
 ## Fondasi Teoretis dan Kerangka Kerja DevSecOps
 
-**Nama**: ........................................................  
-**NIM**: ..........................................................  
-**Kelas**: ........................................................  
+**Nama**: Mohammad Affan Hendi Firmansyah  
+**NIM**: 3126640049  
+**Kelas**: 1 IT-B S.Tr.Lj  
 **Tanggal pelaksanaan**: 27 Agustus 2026  
 
 ---

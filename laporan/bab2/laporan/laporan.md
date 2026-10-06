@@ -1,9 +1,9 @@
 # LAPORAN PRAKTIKUM BAB 2
 ## Konsep Container dan Instalasi Docker
 
-**Nama**: ........................................................  
-**NIM**: ..........................................................  
-**Kelas**: ........................................................  
+**Nama**: Mohammad Affan Hendi Firmansyah  
+**NIM**: 3126640049  
+**Kelas**: 1 IT-B S.Tr.Lj  
 **Tanggal pelaksanaan**: 02 September 2026  
 
 ---
