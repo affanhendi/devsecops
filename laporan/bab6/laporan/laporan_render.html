@@ -1,0 +1,245 @@
+<h1 style="font-size:18pt;color:#111827;margin-top:20px;margin-bottom:10px;border-bottom:2px solid #3B82F6;padding-bottom:8px;">LAPORAN PRAKTIKUM BAB 6</h1>
+<h1 style="font-size:18pt;color:#111827;margin-top:20px;margin-bottom:10px;border-bottom:2px solid #3B82F6;padding-bottom:8px;">Centralized Logging dengan Fluent Bit dan PostgreSQL</h1>
+
+<strong>Mata Kuliah:</strong> DevSecOps Workshop  
+<strong>Bab:</strong> 6 — Centralized Logging dengan Fluent Bit dan PostgreSQL  
+<strong>Laboratorium:</strong> pmb-devsecops-lab  
+<strong>Nama Lengkap:</strong> Mohammad Affan Hendi Firmansyah  
+<strong>NIM:</strong> 3126640049  
+<strong>Kelas:</strong> 1 IT-B S.Tr.Lj  
+<strong>Program Studi:</strong> Sarjana Terapan Lintas Jalur Teknik Informatika  
+<strong>Institusi:</strong> Politeknik Elektronika Negeri Surabaya (PENS)  
+<strong>Tanggal Pelaksanaan:</strong> 13, 26, 27, dan 29 Oktober 2026  
+<strong>Lingkungan Pengujian:</strong> Windows Subsystem for Linux (WSL 2 Ubuntu) / Docker Desktop Engine  
+<strong>Repositori Lab:</strong> <code style="background:#F3F4F6;padding:1px 4px;border-radius:2px;font-family:Consolas,monospace;font-size:8pt;">pmb-devsecops-lab</code>  
+<strong>Lokasi Bukti (Screenshot):</strong> <code style="background:#F3F4F6;padding:1px 4px;border-radius:2px;font-family:Consolas,monospace;font-size:8pt;">laporan/bab6/assets/</code> (55 screenshot)  
+<strong>Lokasi Evidence File:</strong> <code style="background:#F3F4F6;padding:1px 4px;border-radius:2px;font-family:Consolas,monospace;font-size:8pt;">pmb-devsecops-lab/reports/</code>
+
+---
+
+<h2 style="font-size:14pt;color:#1F2937;margin-top:15px;margin-bottom:6px;border-bottom:1px solid #E5E7EB;padding-bottom:4px;">RINGKASAN EKSEKUTIF</h2>
+
+Praktikum Bab 6 bertujuan membangun sistem <em>centralized logging</em> pada aplikasi Penerimaan Mahasiswa Baru (PMB) berbasis kontainer. Aplikasi terdiri dari enam layanan: <code style="background:#F3F4F6;padding:1px 4px;border-radius:2px;font-family:Consolas,monospace;font-size:8pt;">registration-api</code>, <code style="background:#F3F4F6;padding:1px 4px;border-radius:2px;font-family:Consolas,monospace;font-size:8pt;">auth-service</code>, <code style="background:#F3F4F6;padding:1px 4px;border-radius:2px;font-family:Consolas,monospace;font-size:8pt;">verification-worker</code> (aplikasi), <code style="background:#F3F4F6;padding:1px 4px;border-radius:2px;font-family:Consolas,monospace;font-size:8pt;">app-db</code> (database transaksi), <code style="background:#F3F4F6;padding:1px 4px;border-radius:2px;font-family:Consolas,monospace;font-size:8pt;">log-db</code> (database log terpusat), dan <code style="background:#F3F4F6;padding:1px 4px;border-radius:2px;font-family:Consolas,monospace;font-size:8pt;">fluent-bit</code> (collector log). Semua log <code style="background:#F3F4F6;padding:1px 4px;border-radius:2px;font-family:Consolas,monospace;font-size:8pt;">stdout</code>/<code style="background:#F3F4F6;padding:1px 4px;border-radius:2px;font-family:Consolas,monospace;font-size:8pt;">stderr</code> dari layanan aplikasi dikirim melalui Docker logging driver <code style="background:#F3F4F6;padding:1px 4px;border-radius:2px;font-family:Consolas,monospace;font-size:8pt;">fluentd</code> ke Fluent Bit, lalu disimpan ke PostgreSQL dalam tabel <code style="background:#F3F4F6;padding:1px 4px;border-radius:2px;font-family:Consolas,monospace;font-size:8pt;">logs.fluentbit</code> dengan kolom <code style="background:#F3F4F6;padding:1px 4px;border-radius:2px;font-family:Consolas,monospace;font-size:8pt;">tag</code>, <code style="background:#F3F4F6;padding:1px 4px;border-radius:2px;font-family:Consolas,monospace;font-size:8pt;">time</code>, dan <code style="background:#F3F4F6;padding:1px 4px;border-radius:2px;font-family:Consolas,monospace;font-size:8pt;">data JSONB</code>.
+
+Dari hasil praktikum, seluruh layanan berjalan dengan status sehat (<code style="background:#F3F4F6;padding:1px 4px;border-radius:2px;font-family:Consolas,monospace;font-size:8pt;">Up</code> / <code style="background:#F3F4F6;padding:1px 4px;border-radius:2px;font-family:Consolas,monospace;font-size:8pt;">healthy</code>). Tiga alur uji berhasil dieksekusi:
+
+1. <strong>Alur normal (mode <code style="background:#F3F4F6;padding:1px 4px;border-radius:2px;font-family:Consolas,monospace;font-size:8pt;">none</code>):</strong> Pendaftaran berstatus <code style="background:#F3F4F6;padding:1px 4px;border-radius:2px;font-family:Consolas,monospace;font-size:8pt;">VERIFIED</code>.
+2. <strong>Alur insiden (mode <code style="background:#F3F4F6;padding:1px 4px;border-radius:2px;font-family:Consolas,monospace;font-size:8pt;">timeout</code>):</strong> Worker mencoba verifikasi tiga kali, lalu gagal dengan <code style="background:#F3F4F6;padding:1px 4px;border-radius:2px;font-family:Consolas,monospace;font-size:8pt;">dependency_timeout</code> dan status <code style="background:#F3F4F6;padding:1px 4px;border-radius:2px;font-family:Consolas,monospace;font-size:8pt;">FAILED</code> (<code style="background:#F3F4F6;padding:1px 4px;border-radius:2px;font-family:Consolas,monospace;font-size:8pt;">VERIFY-TIMEOUT</code>).
+3. <strong>Recovery:</strong> Setelah dikembalikan ke mode <code style="background:#F3F4F6;padding:1px 4px;border-radius:2px;font-family:Consolas,monospace;font-size:8pt;">none</code>, pendaftaran baru berhasil diverifikasi menjadi <code style="background:#F3F4F6;padding:1px 4px;border-radius:2px;font-family:Consolas,monospace;font-size:8pt;">VERIFIED</code>; pendaftaran lama yang <code style="background:#F3F4F6;padding:1px 4px;border-radius:2px;font-family:Consolas,monospace;font-size:8pt;">FAILED</code> tidak berubah secara otomatis.
+
+Pengujian keamanan log menunjukkan <strong>nol temuan</strong> kata sensitif (password, authorization, bearer, cookie, session secret, API key) pada payload log. Metrik Fluent Bit mencatat 217 record masuk, 0 error, 0 retry gagal, dan 0 record yang dibuang.
+
+Seluruh target verifikasi PASS/FAIL dari cheatsheet Bab 6 telah terpenuhi.
+
+---
+
+<h2 style="font-size:14pt;color:#1F2937;margin-top:15px;margin-bottom:6px;border-bottom:1px solid #E5E7EB;padding-bottom:4px;">1. TUJUAN PRAKTIKUM</h2>
+
+Berdasarkan modul Bab 6, setelah menyelesaikan praktikum ini, mahasiswa diharapkan mampu:
+
+1. Menjelaskan kebutuhan centralized logging pada lingkungan container yang ephemeral.
+2. Mengirim log <code style="background:#F3F4F6;padding:1px 4px;border-radius:2px;font-family:Consolas,monospace;font-size:8pt;">stdout</code>/<code style="background:#F3F4F6;padding:1px 4px;border-radius:2px;font-family:Consolas,monospace;font-size:8pt;">stderr</code> container ke Fluent Bit menggunakan Docker logging driver <code style="background:#F3F4F6;padding:1px 4px;border-radius:2px;font-family:Consolas,monospace;font-size:8pt;">fluentd</code>.
+3. Menyimpan log ke PostgreSQL dalam kolom <code style="background:#F3F4F6;padding:1px 4px;border-radius:2px;font-family:Consolas,monospace;font-size:8pt;">JSONB</code> dan membuat view analisis.
+4. Menerapkan query pencarian log dan retention sederhana.
+5. Menguji retry, timeout, buffering, recovery, dan kemungkinan kehilangan log.
+
+---
+
+<h2 style="font-size:14pt;color:#1F2937;margin-top:15px;margin-bottom:6px;border-bottom:1px solid #E5E7EB;padding-bottom:4px;">2. STRUKTUR REPOSITORI <code style="background:#F3F4F6;padding:1px 4px;border-radius:2px;font-family:Consolas,monospace;font-size:8pt;">pmb-devsecops-lab</code> (Versi 1.0.0)</h2>
+
+<h3 style="font-size:11pt;color:#374151;margin-top:10px;margin-bottom:4px;">2.1 Diagram Arsitektur</h3>
+
+<pre style="background:#1F2937;color:#FFFFFF;padding:8px 12px;border-radius:3px;font-family:Consolas,monospace;font-size:7.5pt;white-space:pre-wrap;word-break:break-word;"><code>[Browser / curl] ──► [registration-api :8080] ──► [auth-service :8081]
+                      │                          │
+                      │ stdout/stderr            │ stdout/stderr
+                      ▼                          ▼
+              [Docker fluentd driver :24226] ──► [Fluent Bit :24224 / :2020]
+                      ▲                          │
+                      │                          │ pgsql output (Match pmb.*)
+                      │                          ▼
+              [verification-worker]          [log-db :5432]
+                      │                          schema: logs
+                      │                          table: fluentbit(tag, time, data JSONB)
+                      ▼
+              [app-db :5432]
+                   schema: public
+                   table: registrations, lab_control</code></pre>
+
+<h3 style="font-size:11pt;color:#374151;margin-top:10px;margin-bottom:4px;">2.2 Tabel Komponen Layanan</h3>
+
+<tr>| 3 | Kesehatan collector | curl http://127.0.0.1:2025/api/v1/health respons sukses | ✅ | — | | 4 | Tiga sumber log | Query GROUP BY tag menampilkan ≥3 tag ( egistration-api, uth-service, erification-worker) | ✅ | — | </tr>
+<tr>| 9 | Konfidensialitas | Query pemeriksaan secret menghasilkan 0 temuan | ✅ | — | | 10 | Recovery | Transaksi baru menjadi VERIFIED setelah mode one | ✅ | — | </tr>
+
+Seluruh skenario verifikasi terpenuhi dengan status <strong>PASS</strong>.
+
+---
+
+<h2 style="font-size:14pt;color:#1F2937;margin-top:15px;margin-bottom:6px;border-bottom:1px solid #E5E7EB;padding-bottom:4px;">8. KESIMPULAN</h2>
+
+Praktikum Bab 6 menggunakan laboratorium pmb-devsecops-lab (versi 1.0.0) berhasil membangun sistem centralized logging dengan Fluent Bit dan PostgreSQL. Log dari tiga layanan aplikasi (
+egistration-api, uth-service, erification-worker) berhasil dikumpulkan melalui Docker logging driver luentd, disimpan dalam kolom JSONB pada tabel logs.fluentbit, dan dapat dianalisis menggunakan query SQL.
+
+Hasil utama:
+- Enam layanan berjalan dengan status sehat (Up / healthy).
+- Alur normal menghasilkan status VERIFIED; alur insiden timeout menghasilkan tiga retry lalu dependency_timeout dan status FAILED.
+- Recovery berhasil: transaksi baru menjadi VERIFIED setelah mode dikembalikan ke 
+one; transaksi lama FAILED tidak berubah otomatis.
+- Tidak ada kredensial atau data sensitif yang bocor ke log (0 temuan secret).
+- Metrik Fluent Bit mencatat 217 record, 0 error, 0 retry gagal, 0 record dibuang.
+- Seluruh target verifikasi PASS/FAIL terpenuhi.
+
+Arsitektur ini cukup baik untuk kebutuhan laboratorium dan pembelajaran, namun sebelum diterapkan pada produksi-like environment, diperlukan penambahan secret management, TLS, pembatasan akses monitoring, kebijakan retensi, dan uji recovery berkala.
+
+---
+<h2 style="font-size:14pt;color:#1F2937;margin-top:15px;margin-bottom:6px;border-bottom:1px solid #E5E7EB;padding-bottom:4px;">9. DAFTAR SCREENSHOT</h2>
+
+Semua screenshot disimpan di laporan/bab6/assets/. Tidak semua screenshot dimasukkan ke laporan ini; berikut ini referensi kumpulan screenshot per tanggal pelaksanaan:
+
+<strong>13 Oktober 2026 (14 file):</strong>
+1. Screenshot 2026-10-13 072702.png
+2. Screenshot 2026-10-13 072714.png
+3. Screenshot 2026-10-13 072727.png
+4. Screenshot 2026-10-13 072842.png
+5. Screenshot 2026-10-13 073009.png
+6. Screenshot 2026-10-13 073056.png
+7. Screenshot 2026-10-13 073152.png
+8. Screenshot 2026-10-13 073236.png
+9. Screenshot 2026-10-13 073306.png
+10. Screenshot 2026-10-13 073411.png
+11. Screenshot 2026-10-13 073430.png
+12. Screenshot 2026-10-13 073503.png
+13. Screenshot 2026-10-13 073514.png
+
+<strong>13 Oktober 2026 (lanjutan, 5 file):</strong>
+14. Screenshot 2026-10-13 084908.png
+15. Screenshot 2026-10-13 085219.png
+16. Screenshot 2026-10-13 085602.png
+17. Screenshot 2026-10-13 090007.png
+18. Screenshot 2026-10-13 090105.png
+
+<strong>26 Oktober 2026 (17 file):</strong>
+19. Screenshot 2026-10-26 095749.png
+20. Screenshot 2026-10-26 095821.png
+21. Screenshot 2026-10-26 095851.png
+22. Screenshot 2026-10-26 095934.png
+23. Screenshot 2026-10-26 100040.png
+24. Screenshot 2026-10-26 100115.png
+25. Screenshot 2026-10-26 100218.png
+26. Screenshot 2026-10-26 100321.png
+27. Screenshot 2026-10-26 100350.png
+28. Screenshot 2026-10-26 100554.png
+29. Screenshot 2026-10-26 100631.png
+30. Screenshot 2026-10-26 100707.png
+31. Screenshot 2026-10-26 100729.png
+32. Screenshot 2026-10-26 100744.png
+33. Screenshot 2026-10-26 100802.png
+34. Screenshot 2026-10-26 100958.png
+
+<strong>27 Oktober 2026 (5 file):</strong>
+35. Screenshot 2026-10-27 091239.png
+36. Screenshot 2026-10-27 091301.png
+37. Screenshot 2026-10-27 091316.png
+38. Screenshot 2026-10-27 091356.png
+39. Screenshot 2026-10-27 091459.png
+
+<strong>29 Oktober 2026 (17 file):</strong>
+40. Screenshot 2026-10-29 080115.png
+41. Screenshot 2026-10-29 080301.png
+42. Screenshot 2026-10-29 080343.png
+43. Screenshot 2026-10-29 080450.png
+44. Screenshot 2026-10-29 080808.png
+45. Screenshot 2026-10-29 080832.png
+46. Screenshot 2026-10-29 080910.png
+47. Screenshot 2026-10-29 081234.png
+48. Screenshot 2026-10-29 081317.png
+49. Screenshot 2026-10-29 081342.png
+50. Screenshot 2026-10-29 082621.png
+51. Screenshot 2026-10-29 082745.png
+52. Screenshot 2026-10-29 083102.png
+53. Screenshot 2026-10-29 083448.png
+54. Screenshot 2026-10-29 083617.png
+55. Screenshot 2026-10-29 083753.png
+
+Keterangan spesifik untuk setiap screenshot dapat disesuaikan oleh penulis laporan berdasarkan isi tangkapan layar yang sebenarnya.
+
+---
+
+<h2 style="font-size:14pt;color:#1F2937;margin-top:15px;margin-bottom:6px;border-bottom:1px solid #E5E7EB;padding-bottom:4px;">10. LAMPIRAN</h2>
+
+<h3 style="font-size:11pt;color:#374151;margin-top:10px;margin-bottom:4px;">10.1 File Evidence yang Digunakan</h3>
+
+Semua file berikut diambil dari pmb-devsecops-lab/reports/ (hasil ./scripts/collect-evidence.sh). File .env <strong>tidak disertakan</strong> ke laporan.
+
+<tr>|------|------------| | </tr>
+eports/compose-ps.txt | Status container dari docker compose ps |
+| 
+eports/registration-status.txt | Status transaksi pendaftaran dari pp-db |
+| 
+eports/incident-analysis.txt | Hasil query queries/incident-analysis.sql dari log-db |
+| 
+eports/fluent-bit-metrics.json | Metrik internal Fluent Bit dari endpoint :2025/api/v1/metrics |
+| 
+eports/config-sha256.txt | Checksum SHA-256 konfigurasi kunci |
+
+<h3 style="font-size:11pt;color:#374151;margin-top:10px;margin-bottom:4px;">10.2 Contoh Query Analisis Inciden</h3>
+
+</code>sql
+-- Query 1: Distribusi log per tag
+SELECT tag, count(*) AS total_event
+FROM logs.fluentbit
+GROUP BY tag
+ORDER BY total_event DESC, tag;
+
+-- Query 2: Kronologi event untuk satu request ID
+WITH events AS (
+    SELECT time, tag, (data ->> 'log')::jsonb AS event
+    FROM logs.fluentbit
+    WHERE tag LIKE 'pmb.%'
+      AND left(ltrim(data ->> 'log'), 1) = '{'
+)
+SELECT
+    time,
+    event ->> 'service' AS service,
+    event ->> 'event' AS event_name,
+    event ->> 'severity' AS severity,
+    event ->> 'attempt' AS attempt,
+    event ->> 'error_code' AS error_code
+FROM events
+WHERE event ->> 'request_id' = 'REQ-771037dd26a3481697453e3a8868dfc2'
+ORDER BY time;
+
+-- Query 3: Pemeriksaan indikasi secret pada log
+SELECT time, tag, left(data ->> 'log', 300) AS suspicious_message
+FROM logs.fluentbit
+WHERE data ->> 'log' ~* '(password|passwd|authorization|bearer|cookie|session[_-]?secret|api[_-]?key)'
+ORDER BY time DESC;
+<code style="background:#F3F4F6;padding:1px 4px;border-radius:2px;font-family:Consolas,monospace;font-size:8pt;">
+
+<h3 style="font-size:11pt;color:#374151;margin-top:10px;margin-bottom:4px;">10.3 Contoh Output Evidence</h3>
+
+**Status transaksi (
+eports/registration-status.txt):**
+
+</code>
+               public_id               |  status  | attempt |  failure_code  |              request_id              |          updated_at
+---------------------------------------+----------+---------+----------------+--------------------------------------+----------------------------
+ ae9a72b3-ec13-4b7f-b80e-202929da0451 | VERIFIED |       1 |                | REQ-24dc4fff9757485c9f1b4675e4a7a21c | 2026-10-29 00:59:23.170994+00
+ 1ace6c00-3ce6-4651-9292-51e5c8af6a7b | FAILED   |       3 | VERIFY-TIMEOUT | REQ-771037dd26a3481697453e3a8868dfc2 | 2026-10-29 00:59:38.328353+00
+ d094a377-6856-4fa5-86bf-53f55480f8b6 | VERIFIED |       1 |                | REQ-f73ff096f22c4917a327e814040b351d | 2026-10-29 00:59:47.406574+00
+<code style="background:#F3F4F6;padding:1px 4px;border-radius:2px;font-family:Consolas,monospace;font-size:8pt;">
+
+**Metrik Fluent Bit (
+eports/fluent-bit-metrics.json):**
+
+</code>json
+{
+  "input": {"forward.0": {"records": 217, "bytes": 65210}},
+  "output": {
+    "pgsql.0": {"proc_records": 217, "errors": 0, "retries_failed": 0, "dropped_records": 0}
+  }
+}
+`
+
+---
+
+<strong>— Akhir Laporan —</strong>

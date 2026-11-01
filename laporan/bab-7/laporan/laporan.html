@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Laporan Praktikum Bab 1 - DevSecOps</title>
+<style>
+  @page {
+    size: A4 portrait;
+    margin: 13mm 14mm 13mm 14mm;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', Calibri, Arial, sans-serif;
+    font-size: 8.8pt;
+    line-height: 1.4;
+    color: #1e293b;
+    margin: 0;
+    padding: 0;
+  }
+  .inst-header {
+    border-bottom: 2px solid #0f172a;
+    padding-bottom: 4px;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+  .inst-header .title-left {
+    font-size: 8.5pt;
+    font-weight: 700;
+    color: #334155;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    line-height: 1.3;
+  }
+  .inst-header .meta-right {
+    font-size: 8pt;
+    color: #64748b;
+    text-align: right;
+  }
+  .doc-title { text-align: center; margin-bottom: 8px; }
+  .doc-title h1 {
+    font-size: 12.5pt;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0 0 3px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .doc-title h2 {
+    font-size: 10pt;
+    font-weight: 600;
+    color: #334155;
+    margin: 0;
+  }
+  .identity-line {
+    font-size: 8.5pt;
+    margin: 2px 0;
+  }
+  h2.section-title {
+    font-size: 10.5pt;
+    font-weight: 700;
+    color: #0f172a;
+    border-bottom: 1.5px solid #0f172a;
+    padding-bottom: 2px;
+    margin-top: 10px;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+  h3.subsection-title {
+    font-size: 9.5pt;
+    font-weight: 700;
+    color: #1e293b;
+    margin-top: 8px;
+    margin-bottom: 3px;
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+  h4.subsubsection-title {
+    font-size: 9pt;
+    font-weight: 700;
+    color: #334155;
+    margin-top: 6px;
+    margin-bottom: 2px;
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+  p { margin: 0 0 4px 0; text-align: justify; }
+  ul, ol { margin: 0 0 5px 0; padding-left: 18px; }
+  li { margin-bottom: 2px; text-align: justify; }
+  table.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 5px 0 7px 0;
+    font-size: 8pt;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  table.data-table th, table.data-table td {
+    border: 1px solid #cbd5e1;
+    padding: 4px 6px;
+    text-align: left;
+    vertical-align: middle;
+  }
+  table.data-table th {
+    background-color: #f1f5f9;
+    font-weight: 700;
+    color: #0f172a;
+  }
+  table.data-table tr:nth-child(even) td { background-color: #f8fafc; }
+  .badge-pass {
+    display: inline-block;
+    background-color: #dcfce7;
+    color: #166534;
+    font-weight: 700;
+    font-size: 7.5pt;
+    padding: 1px 6px;
+    border-radius: 3px;
+    border: 1px solid #bbf7d0;
+  }
+  .badge-fail {
+    display: inline-block;
+    background-color: #fee2e2;
+    color: #991b1b;
+    font-weight: 700;
+    font-size: 7.5pt;
+    padding: 1px 6px;
+    border-radius: 3px;
+    border: 1px solid #fecaca;
+  }
+  .terminal-box {
+    background-color: #090d16;
+    color: #f1f5f9;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 7.5pt;
+    line-height: 1.35;
+    padding: 5px 8px;
+    border-radius: 4px;
+    margin: 3px 0 5px 0;
+    border: 1px solid #1e293b;
+    white-space: pre-wrap;
+    word-break: break-word;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  .terminal-box pre { margin: 0; padding: 0; }
+  .terminal-box code { font-family: inherit; }
+  .figure-box {
+    margin: 5px 0 2px 0;
+    text-align: center;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  .figure-box img {
+    max-width: 95%;
+    max-height: 155px;
+    object-fit: contain;
+    border: 1px solid #cbd5e1;
+    border-radius: 3px;
+    display: block;
+    margin: 0 auto;
+  }
+  .figure-caption {
+    font-size: 7.5pt;
+    color: #475569;
+    font-style: italic;
+    margin-top: 2px;
+    margin-bottom: 5px;
+    text-align: center;
+    break-after: avoid;
+  }
+</style>
+</head>
+<body>
+  <div class="inst-header">
+    <div class="title-left">
+      Workshop DevOps & DevSecOps<br>
+      Departemen Teknik Informatika dan Komputer
+    </div>
+    <div class="meta-right">
+      Modul Laboratorium Praktikum<br>
+      Tahun Akademik 2026/2027
+    </div>
+  </div>
+
+  <div class="doc-title"><h1>LAPORAN PRAKTIKUM DEVOPS & CLOUD COMPUTING</h1>
+<h2 class="section-title">BAB 7: MONITORING RESOURCE DENGAN PROMETHEUS, CADVISOR, NODE EXPORTOR, DAN GRAFANA</h2>
+<h3 class="subsection-title">IDENTITAS MAHASISWA</h3>
+<ul>
+<li><strong>Nama Lengkap</strong> : Mohammad Affan Hendi Firmansyah</li>
+<li><strong>NIM</strong> : 3126640049</li>
+<li><strong>Kelas</strong> : 1 IT-B S.Tr.Lj</li>
+</ul>
+<h2 class="section-title">RINGKASAN EKSEKUTIF</h2>
+<p>Praktikum Bab 7 berfokus pada perancangan, implementasi, dan pengujian arsitektur <em>Monitoring Resource</em> pada lingkungan kontainer Docker menggunakan stack standar industri: <strong>Prometheus</strong> sebagai time-series database dan scraper, <strong>cAdvisor</strong> untuk metrik container, <strong>Node Exporter</strong> untuk metrik host sistem, serta <strong>Grafana</strong> sebagai dashboard dan visualisasi.</p>
+<p>Topik utama meliputi: perbedaan antara monitoring metrics dan logging events, model <em>pull</em> scrape Prometheus, pengumpulan time-series data, dan integrasi data log dari praktikum Bab 6 ke dalam Grafana untuk korelasi insiden lintas observability stack.</p>
+<p>Kompetensi utama yang dicapai meliputi:</p>
+<ol>
+<li>Menjalankan Prometheus sebagai scraper dan time-series database</li>
+<li>Mengumpulkan metrik host dengan Node Exporter dan metrik container dengan cAdvisor</li>
+<li>Membuat dashboard Grafana untuk CPU, memory, disk, network, dan container usage</li>
+<li>Mengintegrasikan data log PostgreSQL dari Bab 6 ke Grafana</li>
+</ol>
+<p>Seluruh target pengujian berhasil divalidasi dengan status <strong>PASS</strong>:</p>
+<ol>
+<li>Semua service Prometheus stack (<code>prometheus</code>, <code>grafana</code>, <code>node-exporter</code>, <code>cadvisor</code>) berstatus <code>Up</code> dan terdeteksi oleh <code>docker compose ps</code>.</li>
+<li>Endpoint Prometheus <code>http://127.0.0.1:9090</code> merespons dengan query <code>up</code> menampilkan 5 target status teratas.</li>
+<li>Dashboard Grafana berhasil dimuat dan menampilkan panels untuk CPU usage, memory consumption, dan container status.</li>
+<li>Data source PostgreSQL Bab 6 dapat ditambahkan ke Grafana dengan hak baca-only (<code>grafana_reader</code>) dan sukses menjalankan query sederhana terhadap tabel <code>logs.fluentbit</code>.</li>
+<li>Konfigurasi recording rules dan alert rules Prometheus dapat diaktifkan tanpa error saat <code>promtool check rules</code>.</li>
+</ol>
+<h2 class="section-title">BAB VII: KONSPIL DAN LANDASAN TEORI</h2>
+<h2 class="section-title">BAB VII: LANGKAH-LANGKAH PRAKTIKUM</h2>
+<h3 class="subsection-title">7.1 Penyiapan Lingkungan</h3>
+<div class="terminal-box"><pre><code>mkdir -p ~/docker-lab/bab-7/{prometheus/rules,prometheus/tests,grafana/provisioning/datasources,grafana/provisioning/dashboards,grafana/dashboards,scripts,reports}
+cd ~/docker-lab/bab-7</code></pre></div>
+<h3 class="subsection-title">7.2 Konfigurasi <code>.env</code> dan <code>.gitignore</code></h3>
+<div class="terminal-box"><pre><code>cp .envexample .env
+chmod 600 .env</code></pre></div>
+<p>Credential tersebut bersifat sintetis. Pada lingkungan produksi, mengganti dengan Docker Swarm Secrets atau HashiCorp Vault.</p>
+<h3 class="subsection-title">7.3 Menjalankan Stack Monitoring</h3>
+<div class="terminal-box"><pre><code>docker compose up -d</code></pre></div>
+<p>Service yang akan dijalankan: <code>prometheus</code>, <code>grafana</code>, <code>node-exporter</code>, <code>cadvisor</code>, dan <code>generator</code> (beban resource).</p>
+<h3 class="subsection-title">7.4 Verifikasi Stack</h3>
+<div class="terminal-box"><pre><code>docker compose past</code></pre></div>
+<p>Pastikan semua target Prometheus berstatus <code>up</code>.</p>
+<h3 class="subsection-title">7.5 Menambahkan Data Source PostgreSQL Bab 6</h3>
+<p>Jalankan skrip integrasi:</p>
+<div class="terminal-box"><pre><code>bash scripts/connect-bab6.sh</code></pre></div>
+<p>Skrip ini melakukan koneksi ke database PostgreSQL dari Bab 6 dengan hak hanya baca (<code>SELECT</code>) pada skema <code>logs</code>, menggunakan kredensial dari berkas <code>.env</code>.</p>
+<h3 class="subsection-title">7.6 Akses Antarmuka</h3>
+<ul>
+<li><strong>Prometheus</strong>: <code>http://127.0.0.1:9090</code></li>
+<li><strong>Grafana</strong>: <code>http://127.0.0.1:3000</code> (user: admin, password: grafanaadmin123)</li>
+</ul>
+<h3 class="subsection-title">7.7 Bukti Eksekusi (Screenshot Evidence)</h3>
+<p><strong>Bukti Minimum Bab 7:</strong></p>
+<ol>
+<li>Screenshot <code>docker compose ps</code> yang menunjukkan service berstatus <code>Up</code> (prometheus, grafana, node-exporter, cadvisor).</li>
+<li>Screenshot hasil akses <code>http://localhost:9090</code> dan query PromQL <code>up</code>, <code>rate(container_cpu_usage_seconds_total[5m])</code>, <code>container_memory_usage_bytes</code>, <code>node_filesystem_avail_bytes</code>.</li>
+<li>Screenshot dashboard Grafana dengan panels CPU, memory, dan container metrics.</li>
+<li>Screenshot hasil koneksi data source PostgreSQL Bab 6 di Grafana (settings > data sources > PostgreSQL Bab 6 test connection sukses).</li>
+<li>Screenshot query sukses terhadap <code>logs.fluentbit</code> dari within Grafana PostgreSQL data source (misal: <code>SELECT count(*) FROM logs.fluentbit GROUP BY tag</code>).</li>
+</ol>
+<h3 class="subsection-title">7.8 Troubleshooting dan Analisis Hasil</h3>
+<table class="data-table">
+<thead><tr><th>Gejala</th><th>Penyebab yang Mungkin</th><th>Tindakan Korektif</th></tr></thead><tbody>
+<tr><td>Gate berbeda antara lokal dan pipeline</td><td>Versi tool, input efektif, atau konfigurasi tidak sama</td><td>Pin versi; simpan konfigurasi efektif dan identitas artefak.</td></tr>
+<tr><td>Service sehat tetapi security gate gagal</td><td>Healthcheck hanya memeriksa availability</td><td>Tinjau policy, scan, identity, signature, dan evidence secara terpisah.</td></tr>
+<tr><td>Evidence tidak dapat ditelusuri</td><td>Commit, digest, waktu, atau owner tidak dicatat</td><td>Gunakan manifest evidence dan metadata yang konsisten.</td></tr>
+<tr><td>Deployment gagal dipulihkan</td><td>Rollback, backup, atau credential rotation belum diuji</td><td>Lakukan recovery exercise dan dokumentasikan hasilnya.</td></tr>
+</tbody></table>
+<h3 class="subsection-title">7.9 Evaluasi dan Latihan Mandiri</h3>
+<ol>
+<li>Mengapa Prometheus menggunakan scrape model dan bukan hanya push model?</li>
+<li>Apa dampak scrape_interval terlalu kecil terhadap storage dan network?</li>
+<li>Mengapa <code>rate</code> diperlukan untuk counter seperti <code>node_cpu_seconds_total</code>?</li>
+<li>Apa indikator awal container mengalami memory pressure?</li>
+<li>Bagaimana menghubungkan alert metrics dengan pencarian log?</li>
+<li>Hitung estimasi penggunaan CPU host tanpa recording rule, lalu bandingkan hasil dan biaya query dengan recording rule.</li>
+<li>Ubah interval scrape menjadi 5 detik dan 30 detik. Ukur dampak terhadap jumlah sampel serta kemampilan melihat spike singkat.</li>
+<li>Identifikasi label cAdvisor dengan cardinality tertinggi. Jelaskan label mana yang layak dipertahankan atau dipindahkan ke log.</li>
+<li>Tambahkan panel network receive/transmit menggunakan <code>rate(node_network_receive_bytes_total[5m])</code> dan <code>rate(node_network_transmit_bytes_total[5m])</code>.</li>
+<li>Hubungkan kenaikan CPU container dengan log Bab 6 pada rentang waktu yang sama dan jelaskan apakah korelasi tersebut cukup untuk menyatakan sebab-akibat.</li>
+<li>Rancang SLI dan SLO sederhana untuk service aplikasi; jelaskan mengapa CPU tidak dapat menjadi pengganti langsung untuk availability pengguna.</li>
+</ol>
+<h3 class="subsection-title">7.10 Integrasi Bab 6 → Bab 7: PostgreSQL ke Grafana</h3>
+<p>Skenario integrasi mencakup:</p>
+<ol>
+<li>Menambahkan PostgreSQL sebagai data source tambahan di Grafana dengan koneksi <code>postgres-db:5432</code>.</li>
+<li>Menggunakan kredensial <code>grafana_reader</code>/<code>grafanareaderpass123</code> dengan hak <code>SELECT</code> terbatas pada skema <code>logs</code>.</li>
+<li>Menjalankan query berikut di Grafana PostgreSQL data source untuk menampilkan distribusi log per generator:</li>
+</ol>
+<div class="terminal-box"><pre><code>SELECT 
+    tag,
+    count(*) AS total_logs
+FROM logs.fluentbit
+GROUP BY tag
+ORDER BY total_logs DESC;</code></pre></div>
+<ol>
+<li>Membuat panel Grafana yang menampilkan correlasi antara kenaikan penggunaan CPU (dari <code>container_cpu_usage_seconds_total</code>) dengan peningkatan volume log (dari <code>logs.fluentbit</code> count) pada rentang waktu yang sama.</li>
+</ol>
+<h3 class="subsection-title">7.11 Referensi Utama</h3>
+<ol>
+<li><a href="https://prometheus.io/docs/prometheus/latest/configuration/configuration/">Prometheus — Configuration</a>.</li>
+<li><a href="https://prometheus.io/docs/prometheus/latest/querying/functions/">Prometheus — Query functions</a>.</li>
+<li><a href="https://grafana.com/docs/grafana/latest/administration/provisioning/">Grafana — Provisioning</a>.</li>
+<li><a href="https://grafana.com/docs/grafana/latest/datasources/">Grafana — Data sources</a>.</li>
+<li><a href="https://github.com/prometheus/node_exporter/releases">Prometheus Node Exporter releases</a>.</li>
+<li><a href="https://github.com/google/cadvisor/releases">Google cAdvisor releases</a>.</li>
+</ol>
+<h3 class="subsection-title">7.1 Monitoring vs Logging</h3>
+<p>Monitoring menjawab pertanyaan "apa yang sedang terjadi pada sistem" melalui angka time-series. Logging menjawab "mengapa hal itu terjadi" melalui event dan pesan detail. Keduanya harus digunakan bersama agar incident response tidak berhenti pada gejala.</p>
+<h3 class="subsection-title">7.2 Model Pull vs Push pada Prometheus</h3>
+<p>Prometheus memakai model <em>pull</em>: server melakukan scrape endpoint <code>/metrics</code> dari target secara berkala. Grafana tidak menyimpan metrics utama, tetapi meng-query data source seperti Prometheus atau PostgreSQL untuk visualisasi dan alerting.</p>
+<h3 class="subsection-title">7.3 PromQL dan Agregasi Temporal</h3>
+<p>PromQL memungkinkan agregasi temporal seperti <code>rate</code>, <code>avg</code>, <code>sum</code>, dan histogram. Kesalahan umum pada pemula adalah membaca counter mentah tanpa <code>rate</code>, sehingga grafik terlihat naik terus tanpa merepresentasikan throughput aktual.</p>
+<h3 class="subsection-title">7.4 Komponen Arsitektur</h3>
+<table class="data-table">
+<thead><tr><th>Komponen</th><th>Fungsi</th><th>Port umum</th></tr></thead><tbody>
+<tr><td>Prometheus</td><td>Scrape metrics dan menyimpan time-series</td><td>9090</td></tr>
+<tr><td>Node Exporter</td><td>Expose metrics host: CPU, RAM, disk, network</td><td>9100</td></tr>
+<tr><td>cAdvisor</td><td>Expose metrics container Docker</td><td>8080/8081</td></tr>
+<tr><td>Grafana</td><td>Dashboard dan visualisasi data source</td><td>3000</td></tr>
+<tr><td>PostgreSQL datasource</td><td>Menampilkan log query dari Bab 6</td><td>5432</td></tr>
+</tbody></table>
+<h3 class="subsection-title">7.5 Setiap time series dibentuk oleh nama metric dan kombinasi label</h3>
+<p>Label seperti <code>service</code>, <code>instance</code>, <code>method</code>, <code>status</code>, dan <code>environment</code> membantu segmentasi. Namun, memasukkan user ID, request ID, alamat acak, atau pesan error sebagai label menciptakan cardinality tinggi yang memperburuk penggunaan memori dan storage.</p>
+</body>
+</html>
